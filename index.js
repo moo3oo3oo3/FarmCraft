@@ -140,7 +140,7 @@ function almanac(query) {
 	const embed = new Discord.MessageEmbed()
 		.setTitle(item.name)
 		.setDescription(item.description)
-		.setThumbnail(`https://github.com/moo3oo3oo3/FarmCraft/blob/main/assets/${item.imageName}?raw=true`)
+		.setThumbnail(`https://github.com/moo3oo3oo3/FarmCraft/blob/main/assets/items/${item.imageName}?raw=true`)
 		.addFields(
 			{ name: ':first_place: Min Lvl', value: item.level, inline: true },
 			{ name: ':brown_square: Soil', value: item.soil, inline: true },
