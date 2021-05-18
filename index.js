@@ -4,7 +4,8 @@ require('dotenv').config();
 
 const Discord = require('discord.js');
 const client = new Discord.Client();
-const guildID = '211731441724293130'; //Test guild
+const guildID = '343936988803629067'; //supa secret call
+//const guildID = '211731441724293130'; //sodium chloride guild
 //const guildID = '211729024165085184'; //Harvard
 const fs = require('fs');
 
