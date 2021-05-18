@@ -9,7 +9,7 @@ const guildID = '343936988803629067'; //supa secret call
 //const guildID = '211729024165085184'; //Harvard
 const fs = require('fs');
 
-const Embed = require('./js/embed.js');
+const Example = require('./js/example.js');
 
 const getApp = (guildID) => {  //Get guild application
 	const app = client.api.applications(client.user.id);
@@ -19,7 +19,7 @@ const getApp = (guildID) => {  //Get guild application
 
 client.on('ready', async () => {
 	console.log(`Logged in as ${client.user.tag}!`);
-	client.user.setPresence({ activity: { name: 'Made by moo3oo3oo3', type: 'PLAYING' } });
+	client.user.setPresence({ activity: { name: 'WIP', type: 'PLAYING' } });
 	
 	//Get slash commands on test guild
 	const commands = await getApp(guildID).commands.get();
@@ -61,11 +61,11 @@ client.ws.on('INTERACTION_CREATE', async (interaction) => {
   
   switch(command) {
 	  case 'almanac':
-		let embed = almanac(options.value);
-		reply(interaction, embed, 1);
+		let embed = almanac(options[0].value);
+		reply(interaction, embed, true);
 		break;
 	  case 'shutdown':
-		reply(interaction, ':farmer: You you next time :wave:', 1);
+		reply(interaction, ':farmer: You you next time :wave:', true);
 		setTimeout(function(){
 			shutdown();
 		}, 5000);
@@ -88,6 +88,8 @@ function reply(interaction, response, ephemeral) {
 	if (typeof response === 'object') {
 		CallbackData = {
 			embeds: [response],
+			//Uncomment when done testing
+			//flags: (ephemeral ? 64 : null),
 		}
 	}
 	
@@ -133,7 +135,19 @@ async function getMessage(channelID, msgID) { //Return message object
 
 
 function almanac(query) {
-	const embed = Embed.create();
+	const item = readJSON(`./items/${query}.json`);
+	
+	const embed = new Discord.MessageEmbed()
+		.setTitle(item.name)
+		.setDescription(item.description)
+		.setThumbnail(`https://github.com/moo3oo3oo3/FarmCraft/blob/main/assets/${item.imageName}?raw=true`)
+		.addFields(
+			{ name: ':first_place: Min Lvl', value: item.level, inline: true },
+			{ name: ':brown_square: Soil', value: item.soil, inline: true },
+			{ name: ':alarm_clock: Growth Time', value: item.growthTime, inline: true },
+			{ name: '\u200B', value: '\u200B'},
+			{ name: ':shopping_cart: Vendor Price', value: `${item.vendor} :coin:`, inline: false },
+		);
 	
 	return embed;
 }
@@ -147,4 +161,4 @@ function shutdown() {
 }
 
 //For scalability
-module.exports = Object.assign({ /*Put functions to export here*/ }, Embed);
+module.exports = Object.assign({ /*Put functions to export here*/ }, Example);

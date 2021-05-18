@@ -1,0 +1,9 @@
+{
+	"name": "Potato",
+	"description": "A spud.",
+	"imageName": "potato.png",
+	"level": 1,
+	"soil": "loam",
+	"growthTime": "04:45:00",
+	"vendor": 7
+}
