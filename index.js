@@ -83,7 +83,23 @@ function reply(interaction, response, ephemeral) {
 	
 	//Check for embed
 	if (typeof response === 'object') {
-		CallbackData = createAPIMessage(interaction, response);
+		CallbackData = {
+			content: 'some content',
+			embeds: [
+				{
+					title: 'tittle',
+					type: 'rich',
+					description: 'description',
+					fields: [
+						{
+							name: 'some field name',
+							value: 'field value',
+							inline: true,
+						}
+					],
+				}
+			],
+		}
 	}
 	
 	client.api.interactions(interaction.id, interaction.token).callback.post({
