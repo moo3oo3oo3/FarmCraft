@@ -9,6 +9,8 @@ const guildID = '343936988803629067'; //supa secret call
 //const guildID = '211729024165085184'; //Harvard
 const fs = require('fs');
 
+const Embed = require('./js/embed.js');
+
 const getApp = (guildID) => {  //Get guild application
 	const app = client.api.applications(client.user.id);
 	if (guildID) { app.guilds(guildID) }
@@ -16,36 +18,37 @@ const getApp = (guildID) => {  //Get guild application
 }
 
 client.on('ready', async () => {
-  console.log(`Logged in as ${client.user.tag}!`);
-  client.user.setPresence({ activity: { name: 'Made by moo3oo3oo3', type: 'PLAYING' } });
+	console.log(`Logged in as ${client.user.tag}!`);
+	client.user.setPresence({ activity: { name: 'Made by moo3oo3oo3', type: 'PLAYING' } });
+	
+	//Get slash commands on test guild
+	const commands = await getApp(guildID).commands.get();
+	console.log(commands);
+	
+	//Almanac slash command
+	await getApp(guildID).commands.post({
+		data: {
+			name: 'almanac',
+			description: 'Provides information.',
+			options: [
+				{
+					name: 'query',
+					description: 'The thing you want more information on.',
+					required: true,
+					type: 3, //String
+				},
+			],
+		},
+	});
   
-  //Get slash commands on test guild
-  const commands = await getApp(guildID).commands.get();
-  console.log(commands);
-  
-  //Almanac slash command
-  await getApp(guildID).commands.post({
-	  data: {
-		 name: 'almanac',
-		 description: 'Provides information.',
-		 options: [
-			{
-				name: 'query',
-				description: 'The thing you want more information on.',
-				required: true,
-				type: 3, //String
-			},
-		 ],
-	  },
-  });
-  
-  //shutdown slash command
-  await getApp(guildID).commands.post({
-	  data: {
-		  name: 'shutdown',
-		  description: 'Turns off the bot.',
-	  },
-  });
+	//shutdown slash command
+	await getApp(guildID).commands.post({
+		data: {
+			name: 'shutdown',
+			description: 'Turns off the bot.',
+		},
+		
+	});
 });
 
 //Slash command interaction event
@@ -84,21 +87,7 @@ function reply(interaction, response, ephemeral) {
 	//Check for embed
 	if (typeof response === 'object') {
 		CallbackData = {
-			content: 'some content',
-			embeds: [
-				{
-					title: 'tittle',
-					type: 'rich',
-					description: 'description',
-					fields: [
-						{
-							name: 'some field name',
-							value: 'field value',
-							inline: true,
-						}
-					],
-				}
-			],
+			embeds: [response],
 		}
 	}
 	
@@ -108,18 +97,6 @@ function reply(interaction, response, ephemeral) {
 			data: CallbackData,
 		},
 	});
-}
-
-
-async function createAPIMessage(interaction, content) {
-	const { data, files } = await Discord.APIMessage.create(
-		client.channels.resolve(interaction.channel_id),
-		content
-	)
-		.resolveData()
-		.resolveFiles();
-	console.log({ ...data, files });
-	return { ...data, files }
 }
 
 
@@ -156,13 +133,8 @@ async function getMessage(channelID, msgID) { //Return message object
 
 
 function almanac(query) {
-	const embed = new Discord.MessageEmbed()
-		.setTitle(query)
-		.addFields(
-			{ name: 'field name1', value: 'value', inline: true },
-			{ name: 'field name2', value: 'value', inline: true },
-			{ name: 'field name3', value: 'value', inline: false },
-		);
+	const embed = Embed.create();
+	
 	return embed;
 }
 
@@ -171,5 +143,8 @@ function shutdown() {
 	console.log('Good Night');
 	client.user.setPresence({ status: 'invisible' });
 	client.destroy();
-	process.kill(process.pid, 'SIGTERM')	
+	process.kill(process.pid, 'SIGTERM') //Waits for processes to finish
 }
+
+//For scalability
+module.exports = Object.assign({ /*Put functions to export here*/ }, Embed);
